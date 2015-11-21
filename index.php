@@ -74,9 +74,9 @@ $traffic = vnstat::get_traffic($selected_interface);
 									?>
 									<tr>
 										<td><?php echo date('l jS F', $time); ?></td>
-										<td class="numeric-cell"><?php echo round($data['rx'] / 1024); ?> MiB</td>
-										<td class="numeric-cell"><?php echo round($data['tx'] / 1024); ?> MiB</td>
-										<td class="numeric-cell"><?php echo round(($data['rx'] + $data['tx']) / 1024); ?> MiB</td>
+										<td class="numeric-cell"><?php echo number_format(round($data['rx'] / 1024)); ?> MiB</td>
+										<td class="numeric-cell"><?php echo number_format(round($data['tx'] / 1024)); ?> MiB</td>
+										<td class="numeric-cell"><?php echo number_format(round(($data['rx'] + $data['tx']) / 1024)); ?> MiB</td>
 									</tr>
 									<?php
 								}
@@ -110,8 +110,8 @@ $traffic = vnstat::get_traffic($selected_interface);
 				foreach ($traffic[$entry['key']] as $time => $data){
 					$chart_data['rows'][] = array('c' => array(
 						array('v' => 'Date(' . ($time * 1000) . ')', 'f' => date($entry['format'], $time)),
-						array('v' => round($data['rx'] / 1024), 'f' => round($data['rx'] / 1024) . ' MiB'),
-						array('v' => round($data['tx'] / 1024), 'f' => round($data['tx'] / 1024) . ' MiB'),
+						array('v' => round($data['rx'] / 1024), 'f' => number_format(round($data['rx'] / 1024)) . ' MiB'),
+						array('v' => round($data['tx'] / 1024), 'f' => number_format(round($data['tx'] / 1024)) . ' MiB'),
 					));
 				}
 
@@ -137,9 +137,9 @@ $traffic = vnstat::get_traffic($selected_interface);
 									?>
 									<tr>
 										<td><?php echo date($entry['format'], $time); ?></td>
-										<td class="numeric-cell"><?php echo round($data['rx'] / 1024); ?> MiB</td>
-										<td class="numeric-cell"><?php echo round($data['tx'] / 1024); ?> MiB</td>
-										<td class="numeric-cell"><?php echo round(($data['rx'] + $data['tx']) / 1024); ?> MiB</td>
+										<td class="numeric-cell"><?php echo number_format(round($data['rx'] / 1024)); ?> MiB</td>
+										<td class="numeric-cell"><?php echo number_format(round($data['tx'] / 1024)); ?> MiB</td>
+										<td class="numeric-cell"><?php echo number_format(round(($data['rx'] + $data['tx']) / 1024)); ?> MiB</td>
 									</tr>
 									<?php
 								}
