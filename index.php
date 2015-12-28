@@ -83,8 +83,7 @@ $traffic = vnstat::get_traffic($selected_interface);
 				<div class="content-box">
 					<div class="head"><h1><?php echo ucfirst($entry['key']); ?></h1></div>
 					<div class="body">
-						<div class="chart" id="<?php echo $entry['key']; ?>-chart"></div>
-						<script type="text/javascript">var <?php echo $entry['key']; ?>Data = <?php echo json_encode($chart_data); ?>;</script>
+						<div class="chart" id="<?php echo $entry['key']; ?>-chart" data-chart-data="<?php echo htmlentities(json_encode($chart_data)); ?>"></div>
 					</div>
 				</div>
 				<?php

@@ -37,24 +37,12 @@ google.setOnLoadCallback(function(){
 		vAxis: { baselineColor: 'none', format: '' }
 	};
 
-	if (hoursData){
-		var hoursDataTable = new google.visualization.DataTable(hoursData);
-		var hoursChart = new google.visualization.AreaChart(document.getElementById('hours-chart'));
+	var containers = document.querySelectorAll('.chart[data-chart-data]');
 
-		hoursChart.draw(hoursDataTable, options);
-	}
+	Array.prototype.forEach.call(containers, function(container){
+		var data = JSON.parse(container.getAttribute('data-chart-data'));
+		var dataTable = new google.visualization.DataTable(data);
 
-	if (daysData){
-		var daysDataTable = new google.visualization.DataTable(daysData);
-		var daysChart = new google.visualization.AreaChart(document.getElementById('days-chart'));
-
-		daysChart.draw(daysDataTable, options);
-	}
-
-	if (monthsData){
-		var monthsDataTable = new google.visualization.DataTable(monthsData);
-		var monthsChart = new google.visualization.AreaChart(document.getElementById('months-chart'));
-
-		monthsChart.draw(monthsDataTable, options);
-	}
+		(new google.visualization.AreaChart(container)).draw(dataTable, options);
+	});
 });
