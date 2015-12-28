@@ -85,32 +85,6 @@ $traffic = vnstat::get_traffic($selected_interface);
 					<div class="body">
 						<div class="chart" id="<?php echo $entry['key']; ?>-chart"></div>
 						<script type="text/javascript">var <?php echo $entry['key']; ?>Data = <?php echo json_encode($chart_data); ?>;</script>
-						<table>
-							<thead>
-								<tr>
-									<th>&nbsp;</th>
-									<th class="numeric-cell">Received</th>
-									<th class="numeric-cell">Sent</th>
-									<th class="numeric-cell">Total</th>
-								</tr>
-							</thead>
-							<tbody>
-								<?php
-
-								foreach ($traffic[$entry['key']] as $time => $data){
-									?>
-									<tr>
-										<td><?php echo date($entry['format'], $time); ?></td>
-										<td class="numeric-cell"><?php echo number_format(round($data['rx'] / 1024)); ?> MiB</td>
-										<td class="numeric-cell"><?php echo number_format(round($data['tx'] / 1024)); ?> MiB</td>
-										<td class="numeric-cell"><?php echo number_format(round(($data['rx'] + $data['tx']) / 1024)); ?> MiB</td>
-									</tr>
-									<?php
-								}
-
-								?>
-							</tbody>
-						</table>
 					</div>
 				</div>
 				<?php
