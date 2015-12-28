@@ -53,42 +53,6 @@ $traffic = vnstat::get_traffic($selected_interface);
 		<div id="content-wrapper">
 			<?php
 
-			if (!empty($traffic['top'])){
-				?>
-				<div class="content-box">
-					<div class="head"><h1>Top 10</h1></div>
-					<div class="body">
-						<table>
-							<thead>
-								<tr>
-									<th>&nbsp;</th>
-									<th class="numeric-cell">Received</th>
-									<th class="numeric-cell">Sent</th>
-									<th class="numeric-cell">Total</th>
-								</tr>
-							</thead>
-							<tbody>
-								<?php
-
-								foreach ($traffic['top'] as $time => $data){
-									?>
-									<tr>
-										<td><?php echo date('l jS F', $time); ?></td>
-										<td class="numeric-cell"><?php echo number_format(round($data['rx'] / 1024)); ?> MiB</td>
-										<td class="numeric-cell"><?php echo number_format(round($data['tx'] / 1024)); ?> MiB</td>
-										<td class="numeric-cell"><?php echo number_format(round(($data['rx'] + $data['tx']) / 1024)); ?> MiB</td>
-									</tr>
-									<?php
-								}
-
-								?>
-							</tbody>
-						</table>
-					</div>
-				</div>
-				<?php
-			}
-
 			$entries = array(
 				array('key' => 'hours', 'format' => 'H:00'),
 				array('key' => 'days', 'format' => 'l jS F'),
