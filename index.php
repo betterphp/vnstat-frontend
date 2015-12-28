@@ -27,7 +27,7 @@ $traffic = vnstat::get_traffic($selected_interface);
 		<title>Traffic Stats for <?php echo $selected_interface; ?></title>
 	</head>
 	<body>
-		<div id="main-header">
+		<div class="main-header">
 			<form action="" method="get">
 				<div>
 					<select name="interface">
@@ -50,7 +50,7 @@ $traffic = vnstat::get_traffic($selected_interface);
 			</table>
 		</div>
 
-		<div id="content-wrapper">
+		<div class="main-content">
 			<?php
 
 			$entries = array(
@@ -80,11 +80,8 @@ $traffic = vnstat::get_traffic($selected_interface);
 				}
 
 				?>
-				<div class="content-box">
-					<div class="head"><h1><?php echo ucfirst($entry['key']); ?></h1></div>
-					<div class="body">
-						<div class="chart" id="<?php echo $entry['key']; ?>-chart" data-chart-data="<?php echo htmlentities(json_encode($chart_data)); ?>"></div>
-					</div>
+				<div class="chart-wrapper">
+					<div class="chart" id="<?php echo $entry['key']; ?>-chart" data-chart-data="<?php echo htmlentities(json_encode($chart_data)); ?>"></div>
 				</div>
 				<?php
 			}
