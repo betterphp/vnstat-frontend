@@ -19,4 +19,6 @@ $selected_interface = (isset($_GET['interface']) && in_array($_GET['interface'],
 							? $_GET['interface']
 							: $interfaces[0];
 
-echo json_encode(vnstat::get_live_traffic($selected_interface));
+$interface = new vnstat($selected_interface);
+
+echo json_encode($interface->get_live_traffic());

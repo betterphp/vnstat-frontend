@@ -18,7 +18,8 @@ $selected_interface = (isset($_GET['interface']) && in_array($_GET['interface'],
 						? $_GET['interface']
 						: $interfaces[0];
 
-$traffic = vnstat::get_traffic($selected_interface);
+$interface = new vnstat($selected_interface);
+$traffic = $interface->get_traffic();
 
 ?>
 <!DOCTYPE html>

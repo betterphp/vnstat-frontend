@@ -6,6 +6,25 @@ namespace betterphp\vnstat_frontend\vnstat;
 
 class vnstat {
 
+	private $interface;
+
+	private static $valid_interfaces = null;
+
+	/**
+	 * @param string $interface The name of the interface to work with
+	 */
+	public function __construct(string $interface) {
+		$this->interface = $interface;
+
+		if (self::$valid_interfaces === null) {
+			self::get_interfaces();
+		}
+
+		if (!in_array($interface, self::$valid_interfaces)) {
+			throw new \Exception('Invalid interface given');
+		}
+	}
+
 	/**
 	 * Gets a list of available interfaces.
 	 *
@@ -14,28 +33,30 @@ class vnstat {
 	 * @return array A list of available interfaces.
 	 */
 	public static function get_interfaces(array $ignore = ['lo']): array {
-		$data = shell_exec('ifconfig -a');
-		preg_match_all('#^([a-z0-9]+): flags#Uim', $data, $matches);
-		$names = $matches[1];
+		if (self::$valid_interfaces === null) {
+			$data = shell_exec('ifconfig -a');
+			preg_match_all('#^([a-z0-9]+): flags#Uim', $data, $matches);
+			$names = $matches[1];
 
-		foreach ($names as $key => $name) {
-			if (in_array($name, $ignore)) {
-				unset($names[$key]);
+			foreach ($names as $key => $name) {
+				if (in_array($name, $ignore)) {
+					unset($names[$key]);
+				}
 			}
+
+			self::$valid_interfaces = $names;
 		}
 
-		return $names;
+		return self::$valid_interfaces;
 	}
 
 	/**
 	 * Gets traffic data from the database.
 	 *
-	 * @param string $interface The name of the interface to fetch data for.
-	 *
 	 * @return array An array of information.
 	 */
-	public static function get_traffic(string $interface): array {
-		$data = explode("\n", trim(shell_exec('vnstat --dumpdb -i ' . escapeshellarg($interface))));
+	public function get_traffic(): array {
+		$data = explode("\n", trim(shell_exec('vnstat --dumpdb -i ' . escapeshellarg($this->interface))));
 
 		$traffic = array();
 
@@ -99,12 +120,10 @@ class vnstat {
 	 *
 	 * Note that this method blocks for 2 seconds while sampling.
 	 *
-	 * @param string $interface The name of the interface.
-	 *
 	 * @return array An array of rate information.
 	 */
-	public static function get_live_traffic(string $interface): array {
-		$data = explode("\n", trim(shell_exec('vnstat -tr 2 -ru 0 -i ' . escapeshellarg($interface))));
+	public function get_live_traffic(): array {
+		$data = explode("\n", trim(shell_exec('vnstat -tr 2 -ru 0 -i ' . escapeshellarg($this->interface))));
 		$traffic = array();
 
 		foreach (array_slice($data, -2) as $line) {
