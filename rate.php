@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+namespace betterphp\vnstat_frontend;
+
+use betterphp\vnstat_frontend\vnstat\vnstat;
+
 include('core/init.inc.php');
 
 header('Content-Type: application/json');

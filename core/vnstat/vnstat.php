@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace betterphp\vnstat_frontend\vnstat;
+
 class vnstat {
 
 	/**

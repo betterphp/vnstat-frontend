@@ -1,6 +1,9 @@
 {
 	"name": "betterphp/vnstat-frontend",
 	"version": "0.1-dev",
+	"config": {
+		"vendor-dir": "core/vendor"
+	},
 	"repositories": [
 		{
 			"type": "vcs",
@@ -10,5 +13,10 @@
 	"require-dev": {
 		"betterphp/php-code-style": "dev-master",
 		"squizlabs/php_codesniffer": "~2"
+	},
+	"autoload": {
+		"psr-4": {
+			"betterphp\\vnstat_frontend\\": "core"
+		}
 	}
 }
