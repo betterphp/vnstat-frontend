@@ -36,6 +36,7 @@ module.exports = function(grunt) {
 
 		jshint: {
 			options: {
+				reporter: './jshint-reporter.js',
 				browser: true, // We're a browser ...
 				devel: true, // ... that has development features \o/
 				strict: true, // Enforce strict mode for all functions
