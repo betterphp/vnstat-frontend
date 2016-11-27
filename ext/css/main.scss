@@ -7,10 +7,10 @@ html {
 }
 
 html, body {
-	margin:			0px;
-	padding:		0px;
-	font-family:	Tahoma, Geneva, Verdana, sans-serif;
-	font-size:		14px;
+	margin: 0px;
+	padding: 0px;
+	font-family: Tahoma, Geneva, Verdana, sans-serif;
+	font-size: 14px;
 }
 
 body {
@@ -21,19 +21,19 @@ body {
 }
 
 .main-header {
-	width:			100%;
-	height:			auto;
-	overflow:		auto;
-	background:		#e0e0e0;
-	border-bottom:	solid 1px #aaa;
-}
+	width: 100%;
+	height: auto;
+	overflow: auto;
+	background: #e0e0e0;
+	border-bottom: solid 1px #aaa;
 
-.main-header > form {
-	float:		left;
-}
+	> form {
+		float: left;
+	}
 
-.main-header > table {
-	float:		right;
+	> table {
+		float: right;
+	}
 }
 
 .main-content {
@@ -46,10 +46,10 @@ body {
 	float: left;
 	width: 50%;
 	height: 50%;
-}
 
-.chart-wrapper:first-child {
-	width: 100%;
+	&:first-child {
+		width: 100%;
+	}
 }
 
 .chart {
