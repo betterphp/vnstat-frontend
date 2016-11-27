@@ -1,10 +1,16 @@
-window.addEventListener('DOMContentLoaded', function(event){
-	(function updateRates(){
-		http.get({
-			url: 'rate.php?interface=' + selectedInterface,
-			timeout: 5000,
-			onSuccess: function(response){
-				var data = JSON.parse(response);
+(function(){
+	"use strict";
+
+	window.addEventListener('DOMContentLoaded', function(event){
+		(function updateRates(){
+			var request = new XMLHttpRequest();
+
+			request.addEventListener('readystatechange', function(event){
+				if (this.readyState !== 4 || this.status !== 200) {
+					return;
+				}
+
+				var data = JSON.parse(this.responseText);
 				var table = document.querySelector('.main-header > table');
 				var cells = table.getElementsByClassName('numeric-cell');
 
@@ -21,28 +27,31 @@ window.addEventListener('DOMContentLoaded', function(event){
 				cells[3].appendChild(document.createTextNode(data.tx.packets + ' packets/s'));
 
 				updateRates();
-			}
-		});
-	})();
-}, false);
+			});
 
-google.load('visualization', '1.1', { packages: ['corechart'] });
-
-google.setOnLoadCallback(function(){
-	var options = {
-		focusTarget: 'category',
-		chartArea: { width: '90%', height: '85%', left: '5%', top: '5%' },
-		legend: { position: 'none' },
-		hAxis: { baselineColor: 'none' },
-		vAxis: { baselineColor: 'none', format: '' }
-	};
-
-	var containers = document.querySelectorAll('.chart[data-chart-data]');
-
-	Array.prototype.forEach.call(containers, function(container){
-		var data = JSON.parse(container.getAttribute('data-chart-data'));
-		var dataTable = new google.visualization.DataTable(data);
-
-		(new google.visualization.AreaChart(container)).draw(dataTable, options);
+			request.open('GET', 'rate.php?interface=' + selectedInterface);
+			request.send();
+		})();
 	});
-});
+
+	google.load('visualization', '1.1', { packages: ['corechart'] });
+
+	google.setOnLoadCallback(function(){
+		var options = {
+			focusTarget: 'category',
+			chartArea: { width: '90%', height: '85%', left: '5%', top: '5%' },
+			legend: { position: 'none' },
+			hAxis: { baselineColor: 'none' },
+			vAxis: { baselineColor: 'none', format: '' }
+		};
+
+		var containers = document.querySelectorAll('.chart[data-chart-data]');
+
+		Array.prototype.forEach.call(containers, function(container){
+			var data = JSON.parse(container.getAttribute('data-chart-data'));
+			var dataTable = new google.visualization.DataTable(data);
+
+			(new google.visualization.AreaChart(container)).draw(dataTable, options);
+		});
+	});
+})();
