@@ -10,7 +10,9 @@ if (empty($interfaces)) {
 	die('No network interfaces detected.');
 }
 
-$selected_interface = (isset($_GET['interface']) && in_array($_GET['interface'], $interfaces)) ? $_GET['interface'] : $interfaces[0];
+$selected_interface = (isset($_GET['interface']) && in_array($_GET['interface'], $interfaces))
+						? $_GET['interface']
+						: $interfaces[0];
 
 $traffic = vnstat::get_traffic($selected_interface);
 
@@ -35,7 +37,9 @@ $traffic = vnstat::get_traffic($selected_interface);
 						<?php
 
 						foreach ($interfaces as $interface) {
-							echo '<option', ($interface == $selected_interface) ? ' selected="selected"' : '', '>', $interface, '</option>';
+							$selected = ($interface == $selected_interface) ? ' selected="selected"' : '';
+
+							echo '<option ', $selected, '>', $interface, '</option>';
 						}
 
 						?>
@@ -45,8 +49,16 @@ $traffic = vnstat::get_traffic($selected_interface);
 			</form>
 			<table>
 				<tbody>
-					<tr><td>In</td><td class="numeric-cell">0.00 MiB/s</td><td class="numeric-cell">0 packets/s</td></tr>
-					<tr><td>Out</td><td class="numeric-cell">0.00 MiB/s</td><td class="numeric-cell">0 packets/s</td></tr>
+					<tr>
+						<td>In</td>
+						<td class="numeric-cell">0.00 MiB/s</td>
+						<td class="numeric-cell">0 packets/s</td>
+					</tr>
+					<tr>
+						<td>Out</td>
+						<td class="numeric-cell">0.00 MiB/s</td>
+						<td class="numeric-cell">0 packets/s</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -75,16 +87,29 @@ $traffic = vnstat::get_traffic($selected_interface);
 				foreach ($traffic[$entry['key']] as $time => $data) {
 					$chart_data['rows'][] = [
 						'c' => [
-							['v' => 'Date(' . ($time * 1000) . ')', 'f' => date($entry['format'], $time)],
-							['v' => round(($data['rx'] / 1024)), 'f' => number_format(round(($data['rx'] / 1024))) . ' MiB'],
-							['v' => round(($data['tx'] / 1024)), 'f' => number_format(round(($data['tx'] / 1024))) . ' MiB'],
+							[
+								'v' => 'Date(' . ($time * 1000) . ')',
+								'f' => date($entry['format'], $time),
+							],
+							[
+								'v' => round(($data['rx'] / 1024)),
+								'f' => number_format(round(($data['rx'] / 1024))) . ' MiB',
+							],
+							[
+								'v' => round(($data['tx'] / 1024)),
+								'f' => number_format(round(($data['tx'] / 1024))) . ' MiB',
+							],
 						]
 					];
 				}
 
 				?>
 				<div class="chart-wrapper">
-					<div class="chart" id="<?php echo $entry['key']; ?>-chart" data-chart-data="<?php echo htmlentities(json_encode($chart_data)); ?>"></div>
+					<div
+						class="chart"
+						id="<?php echo $entry['key']; ?>-chart"
+						data-chart-data="<?php echo htmlentities(json_encode($chart_data)); ?>">
+					</div>
 				</div>
 				<?php
 			}
