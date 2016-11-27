@@ -1,0 +1,14 @@
+{
+	"name": "betterphp/vnstat-frontend",
+	"version": "0.1-dev",
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/betterphp/php-code-style.git"
+		}
+	],
+	"require-dev": {
+		"betterphp/php-code-style": "dev-master",
+		"squizlabs/php_codesniffer": "~2"
+	}
+}
