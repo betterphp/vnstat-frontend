@@ -34,7 +34,7 @@ class vnstat {
 	 */
 	public static function get_interfaces(array $ignore = ['lo']): array {
 		if (self::$valid_interfaces === null) {
-			$data = shell_exec('ifconfig -a');
+			$data = shell_exec('env ifconfig -a');
 			preg_match_all('#^([a-z0-9]+): flags#Uim', $data, $matches);
 			$names = $matches[1];
 
