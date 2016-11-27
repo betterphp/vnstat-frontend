@@ -1,2 +1,6 @@
+# 3rd party libs and composer
 /composer.lock
 /vendor
+
+# Generated test results
+/test-results
