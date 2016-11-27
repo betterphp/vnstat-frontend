@@ -19,13 +19,12 @@ $traffic = vnstat::get_traffic($selected_interface);
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<link rel="stylesheet" type="text/css" media="all" href="ext/css/main.css" />
+		<link rel="stylesheet" type="text/css" media="all" href="ext/css/build/style.min.css" />
 		<script type="text/javascript">
 			var selectedInterface = '<?php echo $selected_interface; ?>';
 		</script>
 		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-		<script type="text/javascript" src="ext/jsc/http.lib.js"></script>
-		<script type="text/javascript" src="ext/jsc/main.js"></script>
+		<script type="text/javascript" src="ext/jsc/build/script.min.js"></script>
 		<title>Traffic Stats for <?php echo $selected_interface; ?></title>
 	</head>
 	<body>

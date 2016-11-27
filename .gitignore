@@ -2,5 +2,12 @@
 /composer.lock
 /vendor
 
+# Node build stuff
+/node_modules
+/.sass-cache
+
 # Generated test results
 /test-results
+
+# Compiled files
+/ext/*/build

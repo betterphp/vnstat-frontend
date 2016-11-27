@@ -5,7 +5,7 @@ window.addEventListener('DOMContentLoaded', function(event){
 			timeout: 5000,
 			onSuccess: function(response){
 				var data = JSON.parse(response);
-				var table = document.querySelector('#main-header > table');
+				var table = document.querySelector('.main-header > table');
 				var cells = table.getElementsByClassName('numeric-cell');
 
 				for (var c = 0; c < cells.length; ++c){
