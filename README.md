@@ -5,3 +5,12 @@ A simple HTML view of the data collected by the [vnstat traffic monitoring tool]
 
 ## Installation
 All config is taken directly from vnstat so there is nothing to configure. Clone or download the repo and extract it somewhere that a browser can get to
+
+## Testing
+We use phpcs and phpunit for testing, run both before commiting anything
+~~~
+./core/vendor/bin/phpcs -p --standard=./ruleset.xml .
+~~~
+~~~
+./core/vendor/bin/phpunit -c ./phpunit.xml
+~~~
