@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 include('core/init.inc.php');
 
 $interfaces = vnstat::get_interfaces();
 
-if (empty($interfaces)){
+if (empty($interfaces)) {
 	die('No network interfaces detected.');
 }
 
@@ -33,7 +35,7 @@ $traffic = vnstat::get_traffic($selected_interface);
 					<select name="interface">
 						<?php
 
-						foreach ($interfaces as $interface){
+						foreach ($interfaces as $interface) {
 							echo '<option', ($interface == $selected_interface) ? ' selected="selected"' : '', '>', $interface, '</option>';
 						}
 
@@ -59,8 +61,8 @@ $traffic = vnstat::get_traffic($selected_interface);
 				array('key' => 'months', 'format' => 'F Y'),
 			);
 
-			foreach ($entries as $entry){
-				if (empty($traffic[$entry['key']])){
+			foreach ($entries as $entry) {
+				if (empty($traffic[$entry['key']])) {
 					continue;
 				}
 
@@ -71,12 +73,14 @@ $traffic = vnstat::get_traffic($selected_interface);
 				$chart_data['cols'][] = array('id' => 'rx', 'label' => 'Received', 'type' => 'number');
 				$chart_data['cols'][] = array('id' => 'tx', 'label' => 'Sent', 'type' => 'number');
 
-				foreach ($traffic[$entry['key']] as $time => $data){
-					$chart_data['rows'][] = array('c' => array(
-						array('v' => 'Date(' . ($time * 1000) . ')', 'f' => date($entry['format'], $time)),
-						array('v' => round($data['rx'] / 1024), 'f' => number_format(round($data['rx'] / 1024)) . ' MiB'),
-						array('v' => round($data['tx'] / 1024), 'f' => number_format(round($data['tx'] / 1024)) . ' MiB'),
-					));
+				foreach ($traffic[$entry['key']] as $time => $data) {
+					$chart_data['rows'][] = [
+						'c' => [
+							['v' => 'Date(' . ($time * 1000) . ')', 'f' => date($entry['format'], $time)],
+							['v' => round(($data['rx'] / 1024)), 'f' => number_format(round(($data['rx'] / 1024))) . ' MiB'],
+							['v' => round(($data['tx'] / 1024)), 'f' => number_format(round(($data['tx'] / 1024))) . ' MiB'],
+						]
+					];
 				}
 
 				?>

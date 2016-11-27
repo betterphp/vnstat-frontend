@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 include('core/init.inc.php');
 
 header('Content-Type: application/json');
@@ -12,5 +14,3 @@ $interfaces = vnstat::get_interfaces();
 $selected_interface = (isset($_GET['interface']) && in_array($_GET['interface'], $interfaces)) ? $_GET['interface'] : $interfaces[0];
 
 echo json_encode(vnstat::get_live_traffic($selected_interface));
-
-?>

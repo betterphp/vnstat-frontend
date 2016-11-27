@@ -4,6 +4,7 @@
 	<exclude-pattern type="relative">^node_modules/*</exclude-pattern>
 	<exclude-pattern type="relative">^.git/*</exclude-pattern>
 	<exclude-pattern type="relative">^vendor/*</exclude-pattern>
+	<exclude-pattern type="relative">^ext/*</exclude-pattern>
 
 	<rule ref="vendor/betterphp/php-code-style/Standard" />
 
