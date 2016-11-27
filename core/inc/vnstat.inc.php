@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-/**
- * An interface to the vnstat executable
- */
 class vnstat {
 
 	/**
 	 * Gets a list of available interfaces.
 	 *
 	 * @param array $ignore A list of interfaces to ignore, defaults to lo only.
+	 *
 	 * @return array A list of available interfaces.
 	 */
 	public static function get_interfaces(array $ignore = ['lo']): array {
@@ -31,6 +29,7 @@ class vnstat {
 	 * Gets traffic data from the database.
 	 *
 	 * @param string $interface The name of the interface to fetch data for.
+	 *
 	 * @return array An array of information.
 	 */
 	public static function get_traffic(string $interface): array {
@@ -99,6 +98,7 @@ class vnstat {
 	 * Note that this method blocks for 2 seconds while sampling.
 	 *
 	 * @param string $interface The name of the interface.
+	 *
 	 * @return array An array of rate information.
 	 */
 	public static function get_live_traffic(string $interface): array {
