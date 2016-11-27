@@ -14,8 +14,9 @@ class vnstat {
 	 * @return array A list of available interfaces.
 	 */
 	public static function get_interfaces(array $ignore = ['lo']): array {
-		$data = trim(shell_exec('vnstat --iflist'));
-		$names = explode(' ', substr($data, (strpos($data, ':') + 2)));
+		$data = shell_exec('ifconfig -a');
+		preg_match_all('#^([a-z0-9]+): flags#Uim', $data, $matches);
+		$names = $matches[1];
 
 		foreach ($names as $key => $name) {
 			if (in_array($name, $ignore)) {
