@@ -24,6 +24,10 @@ class bandwidth {
 		$this->packet_rate = $packet_rate;
 		$this->start = $start;
 		$this->end = $end;
+
+		if ($start >= $end) {
+			throw new \Exception('End time not after start time');
+		}
 	}
 
 	/**
