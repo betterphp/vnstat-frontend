@@ -3,21 +3,13 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use betterphp\vnstat_frontend\network\network_interface;
 use betterphp\vnstat_frontend\vnstat\vnstat;
 
 class VnstatTest extends TestCase {
 
-	public function testListInterfaces() {
-		$interfaces = vnstat::get_interfaces();
-
-		$this->assertInternalType('array', $interfaces);
-		$this->assertNotEmpty($interfaces);
-	}
-
 	private function getTestVnstatInstance(): vnstat {
-		$interfaces = vnstat::get_interfaces();
-
-		return new vnstat($interfaces[0]);
+		return network_interface::get_all()[0]->get_vnstat();
 	}
 
 	// These are essentially placeholder tests until the return values are refactored.

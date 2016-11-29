@@ -4,49 +4,19 @@ declare(strict_types=1);
 
 namespace betterphp\vnstat_frontend\vnstat;
 
+use betterphp\vnstat_frontend\network\network_interface;
+
 class vnstat {
 
 	private $interface;
 
-	private static $valid_interfaces = null;
-
 	/**
-	 * @param string $interface The name of the interface to work with
+	 * @param network_interface $interface The interface to work with
 	 */
-	public function __construct(string $interface) {
+	public function __construct(network_interface $interface) {
+		// No need to check if this is a valid name since the constructor
+		// for network_interface will have done that already.
 		$this->interface = $interface;
-
-		if (self::$valid_interfaces === null) {
-			self::get_interfaces();
-		}
-
-		if (!in_array($interface, self::$valid_interfaces)) {
-			throw new \Exception('Invalid interface given');
-		}
-	}
-
-	/**
-	 * Gets a list of available interfaces.
-	 *
-	 * @param array $ignore A list of interfaces to ignore, defaults to lo only.
-	 *
-	 * @return array A list of available interfaces.
-	 */
-	public static function get_interfaces(array $ignore = ['lo']): array {
-		if (self::$valid_interfaces === null) {
-			$data = file_get_contents('/proc/net/dev');
-			self::$valid_interfaces = [];
-
-			foreach (array_slice(explode("\n", $data), 2) as $line) {
-				$name = trim(explode(':', $line, 2)[0]);
-
-				if (!empty($name) && !in_array($name, $ignore)) {
-					self::$valid_interfaces[] = $name;
-				}
-			}
-		}
-
-		return self::$valid_interfaces;
 	}
 
 	/**
@@ -55,7 +25,7 @@ class vnstat {
 	 * @return array An array of information.
 	 */
 	public function get_traffic(): array {
-		$data = explode("\n", trim(shell_exec('vnstat --dumpdb -i ' . escapeshellarg($this->interface))));
+		$data = explode("\n", trim(shell_exec('vnstat --dumpdb -i ' . escapeshellarg($this->interface->get_name()))));
 
 		$traffic = array();
 
@@ -122,7 +92,7 @@ class vnstat {
 	 * @return array An array of rate information.
 	 */
 	public function get_live_traffic(): array {
-		$data = explode("\n", trim(shell_exec('vnstat -tr 2 -ru 0 -i ' . escapeshellarg($this->interface))));
+		$data = explode("\n", trim(shell_exec('vnstat -tr 2 -ru 0 -i ' . escapeshellarg($this->interface->get_name()))));
 		$traffic = array();
 
 		foreach (array_slice($data, -2) as $line) {
