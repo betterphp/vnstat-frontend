@@ -34,17 +34,16 @@ class vnstat {
 	 */
 	public static function get_interfaces(array $ignore = ['lo']): array {
 		if (self::$valid_interfaces === null) {
-			$data = shell_exec('env ifconfig -a');
-			preg_match_all('#^([a-z0-9]+): flags#Uim', $data, $matches);
-			$names = $matches[1];
+			$data = file_get_contents('/proc/net/dev');
+			self::$valid_interfaces = [];
 
-			foreach ($names as $key => $name) {
-				if (in_array($name, $ignore)) {
-					unset($names[$key]);
+			foreach (array_slice(explode("\n", $data), 2) as $line) {
+				$name = trim(explode(':', $line, 2)[0]);
+
+				if (!empty($name) && !in_array($name, $ignore)) {
+					self::$valid_interfaces[] = $name;
 				}
 			}
-
-			self::$valid_interfaces = $names;
 		}
 
 		return self::$valid_interfaces;
