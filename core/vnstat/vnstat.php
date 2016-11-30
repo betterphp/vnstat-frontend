@@ -22,68 +22,113 @@ class vnstat {
 	}
 
 	/**
-	 * Gets traffic data from the database.
+	 * Used to parse the command output
 	 *
-	 * @return array An array of information.
+	 * The result format varies depending on the type used
+	 *
+	 * @param string $type The group of data to filter to; h, d or m
+	 *
+	 * @return array A list of database entries
 	 */
-	public function get_traffic(): array {
-		$data = explode("\n", trim(shell_exec('vnstat --dumpdb -i ' . escapeshellarg($this->interface->get_name()))));
+	private function get_vnstat_data(string $type): array {
+		$type_name_map = [
+			'h' => 'hours',
+			'd' => 'days',
+			'm' => 'months',
+		];
 
-		$traffic = array();
-
-		$traffic['days'] = array();
-		$traffic['months'] = array();
-		$traffic['top'] = array();
-		$traffic['hours'] = array();
-
-		foreach ($data as $line) {
-			$parts = explode(';', $line);
-
-			switch ($parts[0]) {
-				case 'd';
-					if ($parts[2] != 0) {
-						$time = intval($parts[2]);
-
-						$traffic['days'][$time]['rx'] = (floatval($parts[3]) * 1024 + floatval($parts[5]));
-						$traffic['days'][$time]['tx'] = (floatval($parts[4]) * 1024 + floatval($parts[6]));
-					}
-				break;
-				case 'm':
-					if ($parts[2] != 0) {
-						$time = intval($parts[2]);
-
-						$traffic['months'][$time]['rx'] = (floatval($parts[3]) * 1024 + floatval($parts[5]));
-						$traffic['months'][$time]['tx'] = (floatval($parts[4]) * 1024 + floatval($parts[6]));
-					}
-				break;
-				case 't';
-					if ($parts[2] != 0) {
-						$time = intval($parts[2]);
-
-						$traffic['top'][$time]['rx'] = (floatval($parts[3]) * 1024 + floatval($parts[5]));
-						$traffic['top'][$time]['tx'] = (floatval($parts[4]) * 1024 + floatval($parts[6]));
-					}
-				break;
-				case 'h':
-					if ($parts[2] != 0) {
-						$time = intval($parts[2]);
-
-						$traffic['hours'][$time]['rx'] = floatval($parts[3]);
-						$traffic['hours'][$time]['tx'] = floatval($parts[4]);
-					}
-				break;
-				default:
-					if (count($parts) == 2) {
-						$traffic[$parts[0]] = $parts[1];
-					}
-			}
+		if (!array_key_exists($type, $type_name_map)) {
+			throw new \Exception('Invalid data type');
 		}
 
-		ksort($traffic['days']);
-		ksort($traffic['months']);
-		ksort($traffic['hours']);
+		$cmd_arg_ifname = escapeshellarg($this->interface->get_name());
 
-		return $traffic;
+		$json = shell_exec("vnstat --json {$type} -i {$cmd_arg_ifname}");
+		$data = @json_decode($json); // Ignore errors here and check below
+
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			throw new \Exception('Command returned invalid JSON');
+		}
+
+		// Output is a filtered list of interfaces so just pick the first one
+		$data = $data->interfaces[0];
+
+		if (!isset($data->traffic)) {
+			throw new \Exception('Command did not return any traffic data');
+		}
+
+		$type_property = $type_name_map[$type];
+
+		return $data->traffic->{$type_property};
+	}
+
+	/**
+	 * Used to prepare a list of traffic measurements
+	 *
+	 * @param string $type The period length; h, d or m
+	 *
+	 * @return array A list of traffic measurements
+	 */
+	private function get_traffic(string $type): array {
+		$results = [];
+
+		foreach ($this->get_vnstat_data($type) as $entry) {
+			$date = $entry->date;
+
+			// get_vnstat_data will throw an exception for an invalid type
+			// so there is no need to validate here as well.
+			switch ($type) {
+				case 'h':
+					$start_timestamp = mktime($entry->id, 0, 0, $date->month, $date->day, $date->year);
+					$end_timestamp = mktime(($entry->id + 1), 0, 0, $date->month, $date->day, $date->year);
+				break;
+				case 'd':
+					$start_timestamp = mktime(0, 0, 0, $date->month, $date->day, $date->year);
+					$end_timestamp = mktime(0, 0, 0, $date->month, ($date->day + 1), $date->year);
+				break;
+				case 'm':
+					$start_timestamp = mktime(0, 0, 0, $date->month, 1, $date->year);
+					$end_timestamp = mktime(0, 0, 0, ($date->month + 1), 1, $date->year);
+				break;
+			}
+
+			$start = \DateTime::createFromFormat('U', (string) $start_timestamp);
+			$end = \DateTime::createFromFormat('U', (string) $end_timestamp);
+
+			$results[] = new traffic(
+				new bandwidth($entry->tx, 0, $start, $end),
+				new bandwidth($entry->rx, 0, $start, $end)
+			);
+		}
+
+		return $results;
+	}
+
+	/**
+	 * Gets the hourly traffic information for the last 24 hours
+	 *
+	 * @return array A list of traffic measurements
+	 */
+	public function get_hourly_traffic(): array {
+		return $this->get_traffic('h');
+	}
+
+	/**
+	 * Gets the daily traffic information for the last 30 days
+	 *
+	 * @return array A list of traffic measurements
+	 */
+	public function get_daily_traffic(): array {
+		return $this->get_traffic('d');
+	}
+
+	/**
+	 * Gets the monthly traffic information for the last 12 months
+	 *
+	 * @return array A list of traffic measurements
+	 */
+	public function get_monthly_traffic(): array {
+		return $this->get_traffic('m');
 	}
 
 	/**

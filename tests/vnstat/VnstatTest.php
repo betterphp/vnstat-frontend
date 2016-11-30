@@ -10,27 +10,50 @@ use betterphp\vnstat_frontend\vnstat\vnstat;
 class VnstatTest extends TestCase {
 
 	private $vnstat;
-	private $start;
-	private $end;
 
 	public function setUp() {
 		// Don't like this but we need a real interface to run vnstat commands on for now
 		$this->vnstat = network_interface::get_all()[0]->get_vnstat();
-
-		$this->start = new \DateTime('now');
-		$this->end = new \DateTime('+1 hour');
 	}
 
-	// This is essentially a placeholder test until the return values are refactored.
-	// Just call the method and make sure it returns an array for now.
+	/**
+	 * @dataProvider dataGetPeriodTraffic
+	 */
+	public function testGetPeriodTraffic($period) {
+		$method_name = "get_{$period}_traffic";
+		$results = $this->vnstat->$method_name();
 
-	public function testGetTraffic() {
-		$traffic = $this->vnstat->get_traffic();
+		$this->assertInternalType('array', $results);
+		$this->assertNotEmpty($results);
 
-		$this->assertInternalType('array', $traffic);
+		$expected_duration_h = ($period === 'hourly') ? 1 : 0;
+		$expected_duration_m = 0;
+		$expected_duration_s = 0;
+		$expected_duration_d = ($period === 'daily') ? 1 : 0;
+		$expected_duration_m = ($period === 'monthly') ? 1 : 0;
+		$expected_duration_y = 0;
+
+		foreach ($results as $result) {
+			$this->assertInstanceOf(traffic::class, $result);
+
+			$duration = $result->get_end()->diff($result->get_start());
+
+			$this->assertSame($expected_duration_h, $duration->h);
+			$this->assertSame($expected_duration_m, $duration->m);
+			$this->assertSame($expected_duration_s, $duration->s);
+			$this->assertSame($expected_duration_d, $duration->d);
+			$this->assertSame($expected_duration_m, $duration->m);
+			$this->assertSame($expected_duration_y, $duration->y);
+		}
 	}
 
-	//
+	public function dataGetPeriodTraffic(): array {
+		return [
+			['hourly'],
+			['daily'],
+			['monthly'],
+		];
+	}
 
 	private function callParseLiveSampleLine($line, $start, $end) {
 		$method = new \ReflectionMethod($this->vnstat, 'parse_live_sample_line');
@@ -50,7 +73,10 @@ class VnstatTest extends TestCase {
 	) {
 		$sample_line = "      rx          {$displayed_rate} {$displayed_unit}             {$packet_rate} packets/s";
 
-		$result = $this->callParseLiveSampleLine($sample_line, $this->start, $this->end);
+		$start = new DateTime('now');
+		$end = new DateTime('+1 hour');
+
+		$result = $this->callParseLiveSampleLine($sample_line, $start, $end);
 
 		$this->assertSame($expected_rate, $result->get_byte_rate());
 		$this->assertSame($packet_rate, $result->get_packet_rate());
