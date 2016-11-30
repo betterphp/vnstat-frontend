@@ -4,6 +4,6 @@ var junit = require(require("jshint-junit-reporter"));
 
 exports.reporter = function(results, data, opts){
 	stylish.reporter(results, data, opts);
-	opts.outputFile = './test-results/jshint.xml';
+	opts.outputFile = './test-results/jshint-junit.xml';
 	junit.reporter(results, data, opts);
 };

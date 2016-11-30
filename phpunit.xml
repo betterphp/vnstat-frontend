@@ -4,4 +4,33 @@
 			<directory>tests</directory>
 		</testsuite>
 	</testsuites>
+
+	<filter>
+		<whitelist
+			addUncoveredFilesFromWhitelist="true"
+			processUncoveredFilesFromWhitelist="true"
+			showUncoveredFiles="true"
+		>
+			<directory suffix=".php">./</directory>
+			<exclude>
+				<!-- Not our code -->
+				<directory>./core/vendor</directory>
+				<!-- Don't test tests -->
+				<directory>./tests</directory>
+				<!-- Won't contain any php code but take a while to scan -->
+				<directory>./node_modules</directory>
+				<directory>./sass-cache</directory>
+				<directory>./git</directory>
+				<!-- Page files not tested for now -->
+				<file>./index.php</file>
+				<file>./rate.php</file>
+			</exclude>
+		</whitelist>
+	</filter>
+
+	<logging>
+		<log type="junit" target="./test-results/phpunit-junit.xml" logIncompleteSkipped="true" />
+		<log type="coverage-clover" target="./test-results/phpunit-clover.xml" />
+		<log type="coverage-text" target="php://stdout" />
+	</logging>
 </phpunit>
