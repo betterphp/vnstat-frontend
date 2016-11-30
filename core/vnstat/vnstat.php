@@ -101,6 +101,10 @@ class vnstat {
 			);
 		}
 
+		usort($results, function ($a, $b) {
+			return $a->get_start() <=> $b->get_start();
+		});
+
 		return $results;
 	}
 
