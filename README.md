@@ -14,3 +14,5 @@ We use phpcs and phpunit for testing, run both before commiting anything
 ~~~
 ./core/vendor/bin/phpunit -c ./phpunit.xml
 ~~~
+
+phpunit will do code coverage checking which requires xdebug, if it's not installed this will fail gracefully - not to worry :)
