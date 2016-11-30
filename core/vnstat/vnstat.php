@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace betterphp\vnstat_frontend\vnstat;
 
+use betterphp\vnstat_frontend\data\traffic;
+use betterphp\vnstat_frontend\data\bandwidth;
 use betterphp\vnstat_frontend\network\network_interface;
 
 class vnstat {
@@ -85,35 +87,66 @@ class vnstat {
 	}
 
 	/**
-	 * Gets the live rates for an interface.
+	 * Used to parse the text output from vnstat live sample command
 	 *
-	 * Note that this method blocks for 2 seconds while sampling.
+	 * @param string $line The output line
+	 * @param \DateTime $start The time that the measurement started
+	 * @param \DateTime $end The time that the measurement completed
 	 *
-	 * @return array An array of rate information.
+	 * @return bandwidth The resulting bandwidth measurement
 	 */
-	public function get_live_traffic(): array {
-		$data = explode("\n", trim(shell_exec('vnstat -tr 2 -ru 0 -i ' . escapeshellarg($this->interface->get_name()))));
-		$traffic = array();
+	private function parse_live_sample_line(string $line, \DateTime $start, \DateTime $end): bandwidth {
+		$parts = preg_split('#\s+#', trim($line));
+		$rate = floatval($parts[1]);
+		$packets = intval($parts[3]);
 
-		foreach (array_slice($data, -2) as $line) {
-			$parts = preg_split('#\s+#', trim($line));
+		// The minimum unit vnstat reports is KiB/s
+		$rate *= 1024;
 
-			$rate = floatval($parts[1]);
-
-			switch ($parts[2]) {
-				case 'MiB/s':
-					$rate *= 1024;
-				break;
-				case 'GiB/s':
-					$rate *= 1048576;
-				break;
-			}
-
-			$traffic[$parts[0]]['rate'] = $rate;
-			$traffic[$parts[0]]['packets'] = intval($parts[3]);
+		switch ($parts[2]) {
+			case 'MiB/s':
+				$rate *= 1024;
+			break;
+			case 'GiB/s':
+				$rate *= (1024 * 1024);
+			break;
 		}
 
-		return $traffic;
+		return new bandwidth((int) $rate, $packets, $start, $end);
+	}
+
+	/**
+	 * Samples the traffic on the interface for a number of seconds and takes an average
+	 *
+	 * @param integer $duration How long to take the measurement over
+	 *
+	 * @return traffic The resulting measurement.
+	 */
+	public function sample(int $duration): traffic {
+		if ($duration < 2) {
+			throw new \Exception('Sample duration below 2 seconds');
+		}
+
+		$cmd_arg_time = escapeshellarg((string) $duration);
+		$cmd_arg_ifname = escapeshellarg($this->interface->get_name());
+
+		$start = new \DateTime();
+		$command_output = shell_exec("vnstat -tr {$cmd_arg_time} -ru 0 -i {$cmd_arg_ifname}");
+		$end = new \DateTime();
+
+		$data = explode("\n", trim($command_output));
+
+		if (count($data) !== 5) {
+			throw new \Exception('vnstat executable returned an error: ' . end($data));
+		}
+
+		$sent_line = $data[4];
+		$received_line = $data[3];
+
+		$sent = $this->parse_live_sample_line($sent_line, $start, $end);
+		$received = $this->parse_live_sample_line($received_line, $start, $end);
+
+		return new traffic($sent, $received);
 	}
 
 }
