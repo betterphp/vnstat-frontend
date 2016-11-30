@@ -24,6 +24,8 @@
 				<!-- Page files not tested for now -->
 				<file>./index.php</file>
 				<file>./rate.php</file>
+				<!-- This just includes other files -->
+				<file>./code/init.inc.php</file>
 			</exclude>
 		</whitelist>
 	</filter>
