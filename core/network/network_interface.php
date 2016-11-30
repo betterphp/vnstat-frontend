@@ -42,28 +42,25 @@ class network_interface {
 	}
 
 	/**
-	 * Gets a list of network interface names from /prov/net/dev
+	 * Gets a list of network interface names monitored by vnstat
 	 *
 	 * @return array A list of names
 	 */
 	private static function get_all_names(): array {
-		static $name_list = null;
+		static $names = null;
 
-		if ($name_list === null) {
+		if ($names === null) {
 			// How often are we going to add a new nic while this script is running?
-			$data = file_get_contents('/proc/net/dev');
-			$name_list = [];
+			$files = scandir('/var/lib/vnstat');
 
-			foreach (array_slice(explode("\n", $data), 2) as $line) {
-				$name = trim(explode(':', $line, 2)[0]);
+			$names = array_filter($files, function ($file) {
+				return substr($file, 0, 1) !== '.';
+			});
 
-				if (!empty($name)) {
-					$name_list[] = $name;
-				}
-			}
+			$names = array_values($names);
 		}
 
-		return $name_list;
+		return $names;
 	}
 
 	/**
