@@ -10,10 +10,45 @@ use betterphp\vnstat_frontend\vnstat\vnstat;
 class VnstatTest extends TestCase {
 
     private $vnstat;
+    private $mock_vnstat_script;
 
     public function setUp() {
         // Don't like this but we need a real interface to run vnstat commands on for now
         $this->vnstat = network_interface::get_all()[0]->get_vnstat();
+        $this->mock_vnstat_script = './mocked-vnstat.sh';
+    }
+
+    public function tearDown() {
+        // Delete the mocked vnstat if it's been used
+        if (file_exists($this->mock_vnstat_script)) {
+            unlink($this->mock_vnstat_script);
+        }
+    }
+
+    private function setNextCommandOutput(array $output_lines) {
+        // If the script already exists then we've used a name that's actually part of the project
+        if (file_exists($this->mock_vnstat_script)) {
+            throw new \Exception('Mock vnstat script already exists');
+        }
+
+        // Create a script to output the defined text to stdout
+        $output_text = implode("\n", $output_lines);
+
+        $script = <<<SCRIPT
+#!/bin/bash
+
+cat <<EOT
+{$output_text}
+EOT
+SCRIPT;
+
+        file_put_contents($this->mock_vnstat_script, $script);
+        chmod($this->mock_vnstat_script, 0700);
+
+        // Then set the path to that as the vnstat command
+        $property = new \ReflectionProperty($this->vnstat, 'vnstat_command');
+        $property->setAccessible(true);
+        $property->setValue($this->vnstat, $this->mock_vnstat_script);
     }
 
     public function testGetVnstatDataInvalidType() {
@@ -148,21 +183,17 @@ class VnstatTest extends TestCase {
         $this->vnstat->sample(1);
     }
 
-    public function testSampleWithBadInterface() {
+    public function testSampleWithVnstatError() {
+        $test_error_message = 'what a fantastic message!';
+
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage(
-            'vnstat executable returned an error: Error: Interface "complete_rubbish" not available, exiting.'
-        );
+        $this->expectExceptionMessage("vnstat executable returned an error: {$test_error_message}");
 
-        // XXX: Should create a layer around shell_exec that can be mocked cleanly
-        $mock = $this->getMockBuilder(network_interface::class)
-                     ->disableOriginalConstructor()
-                     ->getMock();
+        $this->setNextCommandOutput([
+            $test_error_message,
+        ]);
 
-        $mock->method('get_name')->willReturn('complete_rubbish');
-        $vnstat = new vnstat($mock);
-
-        $vnstat->sample(2);
+        $this->vnstat->sample(2);
     }
 
 }

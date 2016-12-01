@@ -11,6 +11,7 @@ use betterphp\vnstat_frontend\network\network_interface;
 class vnstat {
 
     private $interface;
+    private $vnstat_command;
 
     /**
      * @param network_interface $interface The interface to work with
@@ -19,6 +20,7 @@ class vnstat {
         // No need to check if this is a valid name since the constructor
         // for network_interface will have done that already.
         $this->interface = $interface;
+        $this->vnstat_command = 'vnstat';
     }
 
     /**
@@ -52,7 +54,7 @@ class vnstat {
 
         $cmd_arg_ifname = escapeshellarg($this->interface->get_name());
 
-        $json = shell_exec("vnstat --json {$type} -i {$cmd_arg_ifname}");
+        $json = shell_exec("{$this->vnstat_command} --json {$type} -i {$cmd_arg_ifname}");
         $data = @json_decode($json); // Ignore errors here and check below
 
         // TODO: test coverage
@@ -191,7 +193,7 @@ class vnstat {
         $cmd_arg_ifname = escapeshellarg($this->interface->get_name());
 
         $start = new \DateTime();
-        $command_output = shell_exec("vnstat -tr {$cmd_arg_time} -ru 0 -i {$cmd_arg_ifname}");
+        $command_output = shell_exec("{$this->vnstat_command} -tr {$cmd_arg_time} -ru 0 -i {$cmd_arg_ifname}");
         $end = new \DateTime();
 
         $data = explode("\n", trim($command_output));
