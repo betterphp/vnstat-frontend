@@ -23,9 +23,11 @@ class NetworkInterfaceTest extends TestCase {
         $method->setAccessible(true);
         $names = $method->invokeArgs(null, []);
 
-        $interface = new network_interface($names[0]);
+        foreach ($names as $name) {
+            $interface = new network_interface($name);
 
-        $this->assertSame($names[0], $interface->get_name());
+            $this->assertSame($name, $interface->get_name());
+        }
     }
 
     public function testGetVnstat() {
