@@ -107,8 +107,8 @@ class vnstat {
             $end = \DateTime::createFromFormat('U', (string) $end_timestamp);
 
             $results[] = new traffic(
-                new bandwidth($entry->tx, 0, $start, $end),
-                new bandwidth($entry->rx, 0, $start, $end)
+                new bandwidth(($entry->tx * 1024), 0, $start, $end),
+                new bandwidth(($entry->rx * 1024), 0, $start, $end)
             );
         }
 

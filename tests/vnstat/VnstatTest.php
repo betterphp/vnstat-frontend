@@ -87,7 +87,7 @@ SCRIPT;
         $this->callGetVnstatData('h');
     }
 
-    private function getVnstatTestTrafficData(string $vnstat_key): string {
+    private function getVnstatTestTrafficData(string $vnstat_key, int $rx, int $tx): string {
         return json_encode([
             'interfaces' => [
                 [
@@ -100,8 +100,8 @@ SCRIPT;
                                     'month' => 10,
                                     'day' => 5, // Monthly doesn't have this key, should be okay here though.
                                 ],
-                                'tx' => 1024,
-                                'rx' => 1024,
+                                'rx' => $rx,
+                                'tx' => $tx,
                             ],
                         ]
                     ],
@@ -115,7 +115,7 @@ SCRIPT;
      */
     public function testGetPeriodTraffic(string $period, string $vnstat_key) {
         $this->setNextCommandOutput([
-            $this->getVnstatTestTrafficData($vnstat_key),
+            $this->getVnstatTestTrafficData($vnstat_key, 1024, 1024),
         ]);
 
         $method_name = "get_{$period}_traffic";
@@ -146,6 +146,27 @@ SCRIPT;
         $this->assertSame($expected_duration_d, $duration->d);
         $this->assertSame($expected_duration_m, $duration->m);
         $this->assertSame($expected_duration_y, $duration->y);
+    }
+
+    /**
+     * @dataProvider dataGetPeriodTraffic
+     * @depends testGetPeriodTraffic
+     */
+    public function testGetPeriodTrafficValue(string $period, string $vnstat_key) {
+        // 10 MiB/s received and 15 MiB/s sent
+        $expected_rx_kib = (1024 * 1024 * 10);
+        $expected_tx_kib = (2014 * 1024 * 15);
+
+        $this->setNextCommandOutput([
+            $this->getVnstatTestTrafficData($vnstat_key, $expected_rx_kib, $expected_tx_kib),
+        ]);
+
+        $method_name = "get_{$period}_traffic";
+        $result = $this->vnstat->$method_name()[0];
+
+        // Our reults should be the same but in bytes
+        $this->assertSame(($expected_rx_kib * 1024), $result->get_received()->get_byte_rate());
+        $this->assertSame(($expected_tx_kib * 1024), $result->get_sent()->get_byte_rate());
     }
 
     public function dataGetPeriodTraffic(): array {
