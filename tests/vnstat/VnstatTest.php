@@ -51,14 +51,40 @@ SCRIPT;
         $property->setValue($this->vnstat, $this->mock_vnstat_script);
     }
 
+    private function callGetVnstatData(string $type) {
+        $method = new \ReflectionMethod($this->vnstat, 'get_vnstat_data');
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($this->vnstat, [&$type]);
+    }
+
     public function testGetVnstatDataInvalidType() {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Invalid data type');
 
-        $method = new \ReflectionMethod($this->vnstat, 'get_vnstat_data');
-        $method->setAccessible(true);
+        $this->callGetVnstatData('pickle');
+    }
 
-        $method->invokeArgs($this->vnstat, ['pickle']);
+    public function testGetVnstatDataInvalidJson() {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Command returned invalid JSON');
+
+        $this->setNextCommandOutput([
+            'crikey this isn\'t JSON',
+        ]);
+
+        $this->callGetVnstatData('h');
+    }
+
+    public function testGetVnstatDataNoTraffic() {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Command did not return any traffic data');
+
+        $this->setNextCommandOutput([
+            '{ "interfaces": [ { "no_traffic": "here" } ] }',
+        ]);
+
+        $this->callGetVnstatData('h');
     }
 
     /**
