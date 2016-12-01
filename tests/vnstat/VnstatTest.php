@@ -242,11 +242,19 @@ SCRIPT;
         $this->assertSame((200 * 1024), $live_traffic->get_sent()->get_byte_rate());
     }
 
-    /**
-     * @dataProvider dataSampleDuration
-     */
-    public function testSampleDuration(int $expected_duration) {
-        // Make sure the sample method blocks for the right amount of
+    public function testSampleDuration() {
+        $expected_duration = 2;
+
+        $this->setNextCommandOutput([
+            '84 packets sampled in 2 seconds   ',
+            'Traffic average for ifname',
+            '',
+            '      rx           100 KiB/s            21 packets/s',
+            '      tx           200 KiB/s            21 packets/s',
+            '',
+        ], $expected_duration);
+
+        // Make sure the sample method blocksfor the right amount of
         // time and that this matches the start and end time difference
         $start_timestamp = microtime(true);
         $result = $this->vnstat->sample($expected_duration);
@@ -256,14 +264,6 @@ SCRIPT;
 
         $this->assertSame($expected_duration, (int) round($end_timestamp - $start_timestamp));
         $this->assertSame($expected_duration, $date_interval->s);
-    }
-
-    public function dataSampleDuration(): array {
-        return [
-            [2],
-            [5],
-            [10],
-        ];
     }
 
     public function testSampleWithBadDuration() {
