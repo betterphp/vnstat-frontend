@@ -16,8 +16,8 @@ header("Pragma: no-cache");
 
 $interfaces = vnstat::get_interfaces();
 $selected_interface = (isset($_GET['interface']) && in_array($_GET['interface'], $interfaces))
-							? $_GET['interface']
-							: $interfaces[0];
+                        ? $_GET['interface']
+                        : $interfaces[0];
 
 $interface = new vnstat($selected_interface);
 

@@ -1,15 +1,15 @@
 {
-  "devDependencies": {
-    "grunt": "latest",
-    "grunt-autoprefixer": "latest",
-    "grunt-contrib-clean": "latest",
-    "grunt-contrib-cssmin": "latest",
-    "grunt-contrib-jshint": "latest",
-    "jshint-stylish": "latest",
-    "jshint-junit-reporter": "latest",
-    "grunt-contrib-sass": "latest",
-    "grunt-contrib-uglify": "latest",
-    "grunt-svgstore": "latest",
-    "grunt-contrib-watch": "latest"
-  }
+    "devDependencies": {
+        "grunt": "latest",
+        "grunt-autoprefixer": "latest",
+        "grunt-contrib-clean": "latest",
+        "grunt-contrib-cssmin": "latest",
+        "grunt-contrib-jshint": "latest",
+        "jshint-stylish": "latest",
+        "jshint-junit-reporter": "latest",
+        "grunt-contrib-sass": "latest",
+        "grunt-contrib-uglify": "latest",
+        "grunt-svgstore": "latest",
+        "grunt-contrib-watch": "latest"
+    }
 }
