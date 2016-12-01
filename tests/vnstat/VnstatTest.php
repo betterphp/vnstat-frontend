@@ -87,15 +87,49 @@ SCRIPT;
         $this->callGetVnstatData('h');
     }
 
+    private function getVnstatTestTrafficData(string $vnstat_key): string {
+        return json_encode([
+            'interfaces' => [
+                [
+                    'traffic' => [
+                        $vnstat_key => [
+                            [
+                                'id' => 1, // For hourly this is the hour, others don't use it
+                                'date' => [
+                                    'year' => 2016,
+                                    'month' => 10,
+                                    'day' => 5, // Monthly doesn't have this key, should be okay here though.
+                                ],
+                                'tx' => 1024,
+                                'rx' => 1024,
+                            ],
+                        ]
+                    ],
+                ],
+            ],
+        ]);
+    }
+
     /**
      * @dataProvider dataGetPeriodTraffic
      */
-    public function testGetPeriodTraffic($period) {
+    public function testGetPeriodTraffic(string $period, string $vnstat_key) {
+        $this->setNextCommandOutput([
+            $this->getVnstatTestTrafficData($vnstat_key),
+        ]);
+
         $method_name = "get_{$period}_traffic";
         $results = $this->vnstat->$method_name();
 
         $this->assertInternalType('array', $results);
+
+        // Test data only has one entry, so that should be the number of results
         $this->assertNotEmpty($results);
+        $this->assertCount(1, $results);
+
+        $result = $results[0];
+
+        $this->assertInstanceOf(traffic::class, $result);
 
         $expected_duration_h = ($period === 'hourly') ? 1 : 0;
         $expected_duration_m = 0;
@@ -104,25 +138,21 @@ SCRIPT;
         $expected_duration_m = ($period === 'monthly') ? 1 : 0;
         $expected_duration_y = 0;
 
-        foreach ($results as $result) {
-            $this->assertInstanceOf(traffic::class, $result);
+        $duration = $result->get_end()->diff($result->get_start());
 
-            $duration = $result->get_end()->diff($result->get_start());
-
-            $this->assertSame($expected_duration_h, $duration->h);
-            $this->assertSame($expected_duration_m, $duration->m);
-            $this->assertSame($expected_duration_s, $duration->s);
-            $this->assertSame($expected_duration_d, $duration->d);
-            $this->assertSame($expected_duration_m, $duration->m);
-            $this->assertSame($expected_duration_y, $duration->y);
-        }
+        $this->assertSame($expected_duration_h, $duration->h);
+        $this->assertSame($expected_duration_m, $duration->m);
+        $this->assertSame($expected_duration_s, $duration->s);
+        $this->assertSame($expected_duration_d, $duration->d);
+        $this->assertSame($expected_duration_m, $duration->m);
+        $this->assertSame($expected_duration_y, $duration->y);
     }
 
     public function dataGetPeriodTraffic(): array {
         return [
-            ['hourly'],
-            ['daily'],
-            ['monthly'],
+            ['hourly', 'hours'],
+            ['daily', 'days'],
+            ['monthly', 'months'],
         ];
     }
 
