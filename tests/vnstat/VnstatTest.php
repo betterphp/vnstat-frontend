@@ -25,7 +25,7 @@ class VnstatTest extends TestCase {
         }
     }
 
-    private function setNextCommandOutput(array $output_lines) {
+    private function setNextCommandOutput(array $output_lines, int $sleep = 0) {
         // If the script already exists then we've used a name that's actually part of the project
         if (file_exists($this->mock_vnstat_script)) {
             throw new \Exception('Mock vnstat script already exists');
@@ -36,6 +36,8 @@ class VnstatTest extends TestCase {
 
         $script = <<<SCRIPT
 #!/bin/bash
+
+sleep {$sleep}
 
 cat <<EOT
 {$output_text}
@@ -224,9 +226,20 @@ SCRIPT;
     }
 
     public function testSample() {
+        $this->setNextCommandOutput([
+            '84 packets sampled in 2 seconds   ',
+            'Traffic average for ifname',
+            '',
+            '      rx           100 KiB/s            21 packets/s',
+            '      tx           200 KiB/s            21 packets/s',
+            '',
+        ], 1); // Make command block for 1 second to avoid exception thrown by date checks
+
         $live_traffic = $this->vnstat->sample(2);
 
         $this->assertInstanceOf(traffic::class, $live_traffic);
+        $this->assertSame((100 * 1024), $live_traffic->get_received()->get_byte_rate());
+        $this->assertSame((200 * 1024), $live_traffic->get_sent()->get_byte_rate());
     }
 
     /**
