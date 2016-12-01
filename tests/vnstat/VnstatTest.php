@@ -16,6 +16,16 @@ class VnstatTest extends TestCase {
 		$this->vnstat = network_interface::get_all()[0]->get_vnstat();
 	}
 
+	public function testGetVnstatDataInvalidType() {
+		$this->expectException(\Exception::class);
+		$this->expectExceptionMessage('Invalid data type');
+
+		$method = new \ReflectionMethod($this->vnstat, 'get_vnstat_data');
+		$method->setAccessible(true);
+
+		$method->invokeArgs($this->vnstat, ['pickle']);
+	}
+
 	/**
 	 * @dataProvider dataGetPeriodTraffic
 	 */
@@ -136,6 +146,24 @@ class VnstatTest extends TestCase {
 		$this->expectExceptionMessage('Sample duration below 2 seconds');
 
 		$this->vnstat->sample(1);
+	}
+
+	public function testSampleWithBadInterface() {
+		$this->expectException(\Exception::class);
+		$this->expectExceptionMessage(
+			'vnstat executable returned an error: Error: Interface "complete_rubbish" not available, exiting.'
+		);
+
+		// XXX: Should create a layer around shell_exec that can be mocked cleanly
+		$mock = $this
+			->getMockBuilder(network_interface::class)
+			->disableOriginalConstructor()
+			->getMock();
+
+		$mock->method('get_name')->willReturn('complete_rubbish');
+		$vnstat = new vnstat($mock);
+
+		$vnstat->sample(2);
 	}
 
 }

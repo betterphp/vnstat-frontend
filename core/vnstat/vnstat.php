@@ -22,6 +22,15 @@ class vnstat {
 	}
 
 	/**
+	 * Gets the network interface that this vnstat is working on
+	 *
+	 * @return network_interface The interface
+	 */
+	public function get_interface(): network_interface {
+		return $this->interface;
+	}
+
+	/**
 	 * Used to parse the command output
 	 *
 	 * The result format varies depending on the type used
@@ -46,6 +55,7 @@ class vnstat {
 		$json = shell_exec("vnstat --json {$type} -i {$cmd_arg_ifname}");
 		$data = @json_decode($json); // Ignore errors here and check below
 
+		// TODO: test coverage
 		if (json_last_error() !== JSON_ERROR_NONE) {
 			throw new \Exception('Command returned invalid JSON');
 		}
@@ -53,6 +63,7 @@ class vnstat {
 		// Output is a filtered list of interfaces so just pick the first one
 		$data = $data->interfaces[0];
 
+		// TODO: test coverage
 		if (!isset($data->traffic)) {
 			throw new \Exception('Command did not return any traffic data');
 		}

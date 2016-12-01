@@ -31,7 +31,10 @@ class NetworkInterfaceTest extends TestCase {
 	public function testGetVnstat() {
 		$interface = network_interface::get_all()[0];
 
+		// Make sure we get a vnstat back
 		$this->assertInstanceOf(vnstat::class, $interface->get_vnstat());
+		// and that it thinks it's meant to work on this interface
+		$this->assertSame($interface, $interface->get_vnstat()->get_interface());
 	}
 
 	public function testGetAll() {
