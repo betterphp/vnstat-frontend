@@ -74,7 +74,6 @@ module.exports = function(grunt) {
             target: {
                 files: {
                     'ext/jsc/build/script.min.js': [
-                        'ext/jsc/http.lib.js',
                         'node_modules/d3/d3.js',
                         'node_modules/c3/c3.js',
                         'ext/jsc/main.js'
