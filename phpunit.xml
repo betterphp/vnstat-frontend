@@ -20,7 +20,7 @@
 				<!-- Won't contain any php code but take a while to scan -->
 				<directory>./node_modules</directory>
 				<directory>./sass-cache</directory>
-				<directory>./git</directory>
+				<directory>./.git</directory>
 				<!-- Page files not tested for now -->
 				<file>./index.php</file>
 				<file>./rate.php</file>
