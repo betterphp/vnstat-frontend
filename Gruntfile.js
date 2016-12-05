@@ -54,17 +54,6 @@ module.exports = function(grunt) {
             all: ['ext/jsc/*.js']
         },
 
-        flow: {
-            app: {
-                src: '.',
-                options: {
-                    all: true,
-                    stripRoot: true,
-                    showAllErrors: true
-                }
-            }
-        },
-
         uglify: {
             options: {
                 preserveComments: 'some',
