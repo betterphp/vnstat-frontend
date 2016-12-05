@@ -20,11 +20,11 @@
 					}
 				}
 
-				cells[0].appendChild(document.createTextNode((data.rx.rate / 1024).toFixed(2) + ' MiB/s'));
-				cells[1].appendChild(document.createTextNode(data.rx.packets + ' packets/s'));
+				cells[0].appendChild(document.createTextNode((data.received.bytes / 1024 / 1024).toFixed(2) + ' MiB/s'));
+				cells[1].appendChild(document.createTextNode(data.received.packets + ' packets/s'));
 
-				cells[2].appendChild(document.createTextNode((data.tx.rate / 1024).toFixed(2) + ' MiB/s'));
-				cells[3].appendChild(document.createTextNode(data.tx.packets + ' packets/s'));
+				cells[2].appendChild(document.createTextNode((data.sent.bytes / 1024 / 1024).toFixed(2) + ' MiB/s'));
+				cells[3].appendChild(document.createTextNode(data.sent.packets + ' packets/s'));
 
 				updateRates();
 			});
