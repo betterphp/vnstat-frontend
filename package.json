@@ -1,4 +1,7 @@
 {
+    "dependencies": {
+        "c3": "latest"
+    },
     "devDependencies": {
         "grunt": "latest",
         "grunt-autoprefixer": "latest",

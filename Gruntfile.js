@@ -24,6 +24,7 @@ module.exports = function(grunt) {
             combine: {
                 files: {
                     'ext/css/build/style.min.css': [
+                        'node_modules/c3/c3.css',
                         'ext/css/build/main.css',
                     ]
                 }
@@ -74,6 +75,8 @@ module.exports = function(grunt) {
                 files: {
                     'ext/jsc/build/script.min.js': [
                         'ext/jsc/http.lib.js',
+                        'node_modules/d3/d3.js',
+                        'node_modules/c3/c3.js',
                         'ext/jsc/main.js'
                     ]
                 }
