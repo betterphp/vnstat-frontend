@@ -47,22 +47,21 @@ $vnstat = $interface->get_vnstat();
     </head>
     <body>
         <div class="main-header">
-            <form action="" method="get">
-                <div>
-                    <select name="interface">
-                        <?php
+            <nav>
+                <?php
 
-                        foreach ($interfaces as $option) {
-                            $selected = ($option === $interface) ? ' selected="selected"' : '';
+                foreach ($interfaces as $option) {
+                    $class_name = ($option === $interface) ? 'current' : '';
 
-                            echo '<option ', $selected, '>', $option->get_name(), '</option>';
-                        }
+                    ?>
+                    <a href="?interface=<?= $option->get_name(); ?>" class="<?= $class_name; ?>">
+                        <?= $option->get_name(); ?>
+                    </a>
+                    <?php
+                }
 
-                        ?>
-                    </select>
-                    <input type="submit" value="Update" />
-                </div>
-            </form>
+                ?>
+            </nav>
             <table>
                 <tbody>
                     <tr>
