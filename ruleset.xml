@@ -11,7 +11,7 @@
 
 	<rule ref="core/vendor/betterphp/php-code-style/Standard" />
 
-	<!-- PHPUnis uses epcial function comments -->
+	<!-- PHPUnis uses special function comments -->
 	<rule ref="Standard.Commenting.FunctionComment">
 		<exclude-pattern>*/tests/*</exclude-pattern>
 	</rule>
