@@ -34,24 +34,37 @@
 		})();
 	});
 
-	google.load('visualization', '1.1', { packages: ['corechart'] });
+	window.addEventListener('DOMContentLoaded', function(event){
+		var charts = document.querySelectorAll('[data-chart-data]');
 
-	google.setOnLoadCallback(function(){
-		var options = {
-			focusTarget: 'category',
-			chartArea: { width: '90%', height: '85%', left: '5%', top: '5%' },
-			legend: { position: 'none' },
-			hAxis: { baselineColor: 'none' },
-			vAxis: { baselineColor: 'none', format: '' }
-		};
+		for (var i = 0; i < charts.length; ++i) {
+			var chart = charts[i];
+			var data = JSON.parse(chart.dataset.chartData);
 
-		var containers = document.querySelectorAll('.chart[data-chart-data]');
-
-		Array.prototype.forEach.call(containers, function(container){
-			var data = JSON.parse(container.getAttribute('data-chart-data'));
-			var dataTable = new google.visualization.DataTable(data);
-
-			(new google.visualization.AreaChart(container)).draw(dataTable, options);
-		});
+			c3.generate({
+				bindto: chart,
+				data: {
+					json: data,
+					type: 'area',
+					keys: {
+						x: 'time',
+						value: [
+							'received',
+							'sent',
+						],
+					},
+					names: {
+						received: 'Received',
+						sent: 'Sent',
+					},
+				},
+				axis: {
+					x: {
+						type: 'timeseries',
+					},
+				},
+			});
+		}
 	});
+
 })();

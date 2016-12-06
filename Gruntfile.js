@@ -48,7 +48,7 @@ module.exports = function(grunt) {
                 unused: 'vars', // Highlight unused variables (vars excludes function params)
                 globals: { // We made these global on purpose - false is read-only
                     selectedInterface: false,
-                    google: false
+                    c3: false
                 }
             },
             all: ['ext/jsc/*.js']

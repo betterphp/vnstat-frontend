@@ -42,7 +42,6 @@ $vnstat = $interface->get_vnstat();
         <script type="text/javascript">
             var selectedInterface = '<?php echo $interface->get_name(); ?>';
         </script>
-        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
         <script type="text/javascript" src="ext/jsc/build/script.min.js"></script>
     </head>
     <body>
@@ -94,29 +93,17 @@ $vnstat = $interface->get_vnstat();
                 list($method_name, $id, $label, $date_format) = $chart_spec;
 
                 $chart_data = [];
-                $chart_data['cols'][] = ['id' => $id, 'label' => $label, 'type' => 'datetime'];
-                $chart_data['cols'][] = ['id' => 'rx', 'label' => 'Received', 'type' => 'number'];
-                $chart_data['cols'][] = ['id' => 'tx', 'label' => 'Sent', 'type' => 'number'];
 
                 foreach ($vnstat->$method_name() as $entry) {
-                    $mbps_received = ($entry->get_received()->get_byte_rate() / 1024 / 1024);
-                    $mbps_sent = ($entry->get_sent()->get_byte_rate() / 1024 / 1024);
+                    // Convert to ms for JavaScript Date()
+                    $start_time = ($entry->get_start()->getTimestamp() * 1000);
+                    $end_time = ($entry->get_end()->getTimestamp() * 1000);
 
-                    $chart_data['rows'][] = [
-                        'c' => [
-                            [
-                                'v' => 'Date(' . ($entry->get_start()->getTimestamp() * 1000) . ')',
-                                'f' => $entry->get_start()->format($date_format),
-                            ],
-                            [
-                                'v' => $mbps_received,
-                                'f' => number_format($mbps_received) . ' MiB',
-                            ],
-                            [
-                                'v' => $mbps_sent,
-                                'f' => number_format($mbps_sent) . ' MiB',
-                            ],
-                        ]
+                    $chart_data[] = [
+                        // Adverage of start and end times used as the rate reported is averaged over this time
+                        'time' => ($start_time + (($end_time - $start_time) / 2)),
+                        'sent' => $entry->get_sent()->get_byte_rate(),
+                        'received' => $entry->get_received()->get_byte_rate(),
                     ];
                 }
 
