@@ -1,24 +1,24 @@
 <?xml version="1.0"?>
 <ruleset name="vnstat-frontend-style">
-	<description>Vnstat Frontend Code Style</description>
-	<exclude-pattern type="relative">^Gruntfile.js</exclude-pattern>
-	<exclude-pattern type="relative">^jshint-reporter.js</exclude-pattern>
-	<exclude-pattern type="relative">^node_modules/*</exclude-pattern>
-	<exclude-pattern type="relative">^.git/*</exclude-pattern>
-	<exclude-pattern type="relative">^core/vendor/*</exclude-pattern>
-	<exclude-pattern type="relative">^test-results/*</exclude-pattern>
-	<exclude-pattern type="relative">^ext/*</exclude-pattern>
+    <description>Vnstat Frontend Code Style</description>
+    <exclude-pattern type="relative">^Gruntfile.js</exclude-pattern>
+    <exclude-pattern type="relative">^jshint-reporter.js</exclude-pattern>
+    <exclude-pattern type="relative">^node_modules/*</exclude-pattern>
+    <exclude-pattern type="relative">^.git/*</exclude-pattern>
+    <exclude-pattern type="relative">^core/vendor/*</exclude-pattern>
+    <exclude-pattern type="relative">^test-results/*</exclude-pattern>
+    <exclude-pattern type="relative">^ext/*</exclude-pattern>
 
-	<rule ref="core/vendor/betterphp/php-code-style/Standard" />
+    <rule ref="core/vendor/betterphp/php-code-style/Standard" />
 
-	<!-- PHPUnis uses special function comments -->
-	<rule ref="Standard.Commenting.FunctionComment">
-		<exclude-pattern>*/tests/*</exclude-pattern>
-	</rule>
+    <!-- PHPUnis uses special function comments -->
+    <rule ref="Standard.Commenting.FunctionComment">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
 
-	<!-- Not too bothered about spacing and full stops -->
-	<rule ref="Standard.Commenting.FunctionComment.SpacingAfterParamType"><severity>0</severity></rule>
-	<rule ref="Standard.Commenting.FunctionComment.SpacingAfterParamName"><severity>0</severity></rule>
-	<rule ref="Standard.Commenting.FunctionComment.ThrowsNoFullStop"><severity>0</severity></rule>
-	<rule ref="Standard.Commenting.FunctionComment.ParamCommentFullStop"><severity>0</severity></rule>
+    <!-- Not too bothered about spacing and full stops -->
+    <rule ref="Standard.Commenting.FunctionComment.SpacingAfterParamType"><severity>0</severity></rule>
+    <rule ref="Standard.Commenting.FunctionComment.SpacingAfterParamName"><severity>0</severity></rule>
+    <rule ref="Standard.Commenting.FunctionComment.ThrowsNoFullStop"><severity>0</severity></rule>
+    <rule ref="Standard.Commenting.FunctionComment.ParamCommentFullStop"><severity>0</severity></rule>
 </ruleset>
