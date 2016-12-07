@@ -15,4 +15,6 @@ We use phpcs and phpunit for testing, run both before commiting anything
 ./core/vendor/bin/phpunit -c ./phpunit.xml
 ~~~
 
-phpunit will do code coverage checking which requires xdebug, if it's not installed this will fail gracefully - not to worry :)
+phpunit will do code coverage checking which requires xdebug, if it's not installed this will fail gracefully - not to worry.
+
+A report of the test coverage is published [here by Jenkins](https://ci.jacekk.co.uk/view/Websites/job/Vnstat%20Frontend/HTML_Code_Coverage/index.html)
