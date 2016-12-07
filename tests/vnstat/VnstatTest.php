@@ -63,6 +63,12 @@ SCRIPT;
         return $method->invokeArgs($this->vnstat, [&$type]);
     }
 
+    public function testGetInterface() {
+        $interface = $this->vnstat->get_interface();
+
+        $this->assertInstanceOf(network_interface::class, $interface);
+    }
+
     public function testGetVnstatDataInvalidType() {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Invalid data type');
