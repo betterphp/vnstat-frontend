@@ -7,6 +7,9 @@ use betterphp\vnstat_frontend\data\traffic;
 use betterphp\vnstat_frontend\network\network_interface;
 use betterphp\vnstat_frontend\vnstat\vnstat;
 
+/**
+ * @covers betterphp\vnstat_frontend\vnstat\vnstat
+ */
 class VnstatTest extends TestCase {
 
     private $vnstat;

@@ -6,6 +6,9 @@ use PHPUnit\Framework\TestCase;
 use betterphp\vnstat_frontend\data\bandwidth;
 use betterphp\vnstat_frontend\data\traffic;
 
+/**
+ * @covers betterphp\vnstat_frontend\data\traffic
+ */
 class TrafficTest extends TestCase {
 
     private function createMockBandwidthObject(DateTime $start, DateTime $end) {

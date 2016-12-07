@@ -5,6 +5,9 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 use betterphp\vnstat_frontend\data\bandwidth;
 
+/**
+ * @covers betterphp\vnstat_frontend\data\bandwidth
+ */
 class BandwidthTest extends TestCase {
 
     public function testGetProperties() {

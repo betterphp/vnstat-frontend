@@ -6,6 +6,9 @@ use PHPUnit\Framework\TestCase;
 use betterphp\vnstat_frontend\network\network_interface;
 use betterphp\vnstat_frontend\vnstat\vnstat;
 
+/**
+ * @covers betterphp\vnstat_frontend\network\network_interface
+ */
 class NetworkInterfaceTest extends TestCase {
 
     public function testInvalidName() {
