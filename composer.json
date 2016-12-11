@@ -8,10 +8,15 @@
         {
             "type": "vcs",
             "url": "https://github.com/betterphp/php-code-style.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/betterphp/php-reflection-utils.git"
         }
     ],
     "require-dev": {
         "betterphp/php-code-style": "dev-master",
+        "betterphp/php-reflection-utils": "dev-master",
         "squizlabs/php_codesniffer": "~2",
         "phpunit/phpunit": "~5"
     },

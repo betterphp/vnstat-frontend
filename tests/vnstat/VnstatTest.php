@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use betterphp\utils\reflection;
 use betterphp\vnstat_frontend\data\traffic;
 use betterphp\vnstat_frontend\network\network_interface;
 use betterphp\vnstat_frontend\vnstat\vnstat;
@@ -51,16 +52,7 @@ SCRIPT;
         chmod($this->mock_vnstat_script, 0700);
 
         // Then set the path to that as the vnstat command
-        $property = new \ReflectionProperty($this->vnstat, 'vnstat_command');
-        $property->setAccessible(true);
-        $property->setValue($this->vnstat, $this->mock_vnstat_script);
-    }
-
-    private function callGetVnstatData(string $type) {
-        $method = new \ReflectionMethod($this->vnstat, 'get_vnstat_data');
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($this->vnstat, [&$type]);
+        reflection::set_property($this->vnstat, 'vnstat_command', $this->mock_vnstat_script);
     }
 
     public function testGetInterface() {
@@ -73,7 +65,7 @@ SCRIPT;
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Invalid data type');
 
-        $this->callGetVnstatData('pickle');
+        reflection::call_method($this->vnstat, 'get_vnstat_data', 'pickle');
     }
 
     public function testGetVnstatDataInvalidJson() {
@@ -84,7 +76,7 @@ SCRIPT;
             'crikey this isn\'t JSON',
         ]);
 
-        $this->callGetVnstatData('h');
+        reflection::call_method($this->vnstat, 'get_vnstat_data', 'h');
     }
 
     public function testGetVnstatDataNoTraffic() {
@@ -95,7 +87,7 @@ SCRIPT;
             '{ "interfaces": [ { "no_traffic": "here" } ] }',
         ]);
 
-        $this->callGetVnstatData('h');
+        reflection::call_method($this->vnstat, 'get_vnstat_data', 'h');
     }
 
     private function getVnstatTestTrafficData(string $vnstat_key, int $rx, int $tx): string {
@@ -188,13 +180,6 @@ SCRIPT;
         ];
     }
 
-    private function callParseLiveSampleLine($line, $start, $end) {
-        $method = new \ReflectionMethod($this->vnstat, 'parse_live_sample_line');
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($this->vnstat, [&$line, &$start, &$end]);
-    }
-
     /**
      * @dataProvider dataParseLiveSampleLine
      */
@@ -209,7 +194,7 @@ SCRIPT;
         $start = new DateTime('now');
         $end = new DateTime('+1 hour');
 
-        $result = $this->callParseLiveSampleLine($sample_line, $start, $end);
+        $result = reflection::call_method($this->vnstat, 'parse_live_sample_line', $sample_line, $start, $end);
 
         $this->assertSame($expected_rate, $result->get_byte_rate());
         $this->assertSame($packet_rate, $result->get_packet_rate());

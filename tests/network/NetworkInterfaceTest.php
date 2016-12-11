@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use betterphp\utils\reflection;
 use betterphp\vnstat_frontend\network\network_interface;
 use betterphp\vnstat_frontend\vnstat\vnstat;
 
@@ -22,9 +23,7 @@ class NetworkInterfaceTest extends TestCase {
         // Call get_all_names directly with reflection as calling get_all would
         // call the constructor which is what we're testing here, a little pointless
         // but good to have the test coverage.
-        $method = new ReflectionMethod(network_interface::class, 'get_all_names');
-        $method->setAccessible(true);
-        $names = $method->invokeArgs(null, []);
+        $names = reflection::call_method(network_interface::class, 'get_all_names');
 
         foreach ($names as $name) {
             $interface = new network_interface($name);
